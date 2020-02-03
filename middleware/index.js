@@ -8,11 +8,13 @@ app.use(passport.initialize());
 app.use(passport.session());
 const {connection, Sequelize} = require('../db');
 const Post = require('../db/models/post')
+const Comment = require('../db/models/comment');
+const Logger = require('../logger');
 
 connection.sync().then(()=>{
     console.log("Database synchronised successfully");
 }).catch((error)=> {
-    console.log("Error occurred due to " + error.message);
+    Logger.error("Error occurred due to ", error)
 });
 
 module.exports = {app, passport};

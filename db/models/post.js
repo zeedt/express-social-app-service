@@ -11,6 +11,6 @@ const Post = connection.define('posts', {
     }
 })
 
-Post.belongsTo(User, {foreignKey : {allowNull : false}});
+Post.belongsTo(User, {foreignKey : {allowNull : false}, as : 'user'});
 
 module.exports = Post;
