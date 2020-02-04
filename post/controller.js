@@ -34,6 +34,15 @@ const PostController = (app) => {
       }
     });
 
+    app.get("/posts-with-lesser-id", passport.authenticate('bearer', { session: false }), async (req, res) => {
+        try {
+              const posts = await PostService.loadPostsOfLesserId(req.query['id'], req.query['pageSize']);
+              return  res.json(posts);
+        } catch (e) {
+            Logger.error("Error occurred while loading posts due to ", e);
+              return  res.json({message:'Error occurred while fetching posts'}).status(INTERNAL_SERVER_ERROR_STATUS_CODE);
+        }
+      });
 
 }
 

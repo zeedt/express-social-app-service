@@ -1,6 +1,6 @@
 const Post = require('../db/models/post');
 const User = require('../db/models/users');
-
+const Op = require('../db/index').Sequelize.Op;
 
 const PostService = () => {
 
@@ -33,8 +33,26 @@ const PostService = () => {
                 ]
             });
     }
+    const loadPostsOfLesserId = async (id = 0, pageSize = 10) => {
+        pageSize = (isNaN(pageSize)) ? 10 : pageSize;
+        return await Post.findAll(
+            {
+                where : {
+                    id : {[Op.lt] : (id)}
+                },
+                limit : pageSize,
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['username', 'first_name', 'last_name']
+                }],
+                order : [
+                    ['id' , "DESC"]
+                ]
+            });
+    }
 
-    return { addPost, loadPosts }
+    return { addPost, loadPosts, loadPostsOfLesserId }
 }
 
 
