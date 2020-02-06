@@ -6,6 +6,8 @@ const IOEvents = (io) => {
     io.on('connection', socket => {
         console.log('Client connected ' + socket.id);
 
+        // io.emit
+
 
         socket.on('join', data => {
             console.log('joining' + JSON.stringify(data));
