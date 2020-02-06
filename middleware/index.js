@@ -1,11 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const passport = require('../authentication/strategy')
+const passport = require('../authentication/strategy');
+var cors = require('cors');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
 const {connection, Sequelize} = require('../db');
 const Post = require('../db/models/post')
 const Comment = require('../db/models/comment');

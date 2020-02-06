@@ -37,6 +37,10 @@ const UserController = (app) => {
            res.json(result).status(INTERNAL_SERVER_ERROR_STATUS_CODE);
       }
     });
+
+    app.get("/my-info", passport.authenticate('bearer', { session: false }), (req, res) => {
+      return  res.json(req.user);
+    });
 }
 
 module.exports = UserController
