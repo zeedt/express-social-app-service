@@ -34,8 +34,11 @@ server.exchange(oauth2orize.exchange.password((client, username, password, scope
                 const tokenValue = crypto.randomBytes(32).toString('hex');
                 const tokenObject = { token: tokenValue, clientId: client.clientId, userId: user.id };
                 AccessToken.create(tokenObject).then(() => {
-                    console.log("Token saved successfully");
-                    return done(null, tokenValue);
+                    user.password = null;
+                    const authObject = {
+                        token_string : tokenValue, user:user
+                    }
+                    return done(null, authObject);
                 }).catch((err) => {
                         return done(err);
                     })
