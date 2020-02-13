@@ -1,9 +1,9 @@
 var connectedUsers = [];
 var socketIds = [];
 
-setInterval(() => {
-    console.log(connectedUsers.length)
-}, 1000)
+// setInterval(() => {
+//     console.log(connectedUsers.length)
+// }, 1000)
 
 const getUserSocketsToPushTo = (username) => {
     var userSocketsToReceive = [];
@@ -24,7 +24,7 @@ const IOEvents = (io) => {
 
         socket.on('join', data => {
             if (socketIds.includes(socket.id)) {
-                console.log("Socket already exists");
+                // console.log("Socket already exists");
                 return;
             } else {
                 socket.username = data.username;

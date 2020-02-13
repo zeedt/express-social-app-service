@@ -7,8 +7,7 @@ const PostService = () => {
 
     const addPost = async (postData) => {
         try {
-            await Post.create(postData);
-            return true;
+            return await Post.create(postData);
         } catch (e) {
             throw new Error(e);
         }
@@ -26,7 +25,7 @@ const PostService = () => {
                 include: [{
                     model: User,
                     as: 'user',
-                    attributes: ['username', 'first_name', 'last_name']
+                    attributes: ['username', 'first_name', 'last_name', 'display_picture']
                 }],
                 order : [
                     ['id' , "DESC"]
@@ -44,7 +43,7 @@ const PostService = () => {
                 include: [{
                     model: User,
                     as: 'user',
-                    attributes: ['username', 'first_name', 'last_name']
+                    attributes: ['username', 'first_name', 'last_name', 'display_picture']
                 }],
                 order : [
                     ['id' , "DESC"]

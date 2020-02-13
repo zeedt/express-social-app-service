@@ -34,6 +34,9 @@ const User = connection.define('users', {
         type : Sequelize.ENUM,
         values : ['MALE', 'FEMALE'],
         allowNull : false
+    },
+    display_picture : {
+        type : Sequelize.TEXT
     }
 });
 
