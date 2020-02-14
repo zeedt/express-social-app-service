@@ -37,6 +37,9 @@ const User = connection.define('users', {
     },
     display_picture : {
         type : Sequelize.TEXT
+    },
+    email : {
+        type : Sequelize.STRING
     }
 });
 

@@ -4,6 +4,7 @@ const util = require('../utils/utils');
 const Logger = require('../logger');
 const fs = require('fs');
 const { AccessToken } = require('../authentication/db/models')
+const Op = require('../db/index').Sequelize.Op;
 
 const multer = require('multer')
 
@@ -86,7 +87,70 @@ const UserService = () => {
         return true;
     }
 
-    return { signUp, loadUsers, uploadImage, saveUserDisplayPicture, loadDisplayPictureForUser, logout }
+    const updateUserInfo = async (data, loggedInUserName) => {
+
+        const user = await User.findOne({ where: { username: loggedInUserName } });
+        if (user == null) {
+            return { successful: false, message: 'user not found' }
+        }
+
+        if (!util.isPasswordCorrect(data.password, user.password)) {
+            return { successful: false, message: 'Current password not correct' }
+        }
+
+        await User.update({ first_name: data.first_name, last_name: data.last_name, email: data.email }, { where: { username: loggedInUserName } });
+
+        return { successful: true, message: 'User information updated successfully' }
+
+    }
+
+
+    const updateUserPassword = async (data, loggedInUserName) => {
+
+        const user = await User.findOne({ where: { username: loggedInUserName } });
+        if (user == null) {
+            return { successful: false, message: 'user not found' }
+        }
+
+        if (!util.isPasswordCorrect(data.currentPassword, user.password)) {
+            return { successful: false, message: 'Current password not correct' }
+        }
+
+        const encryptedPassword = await util.hashPassword(data.newPassword)
+        await User.update({ password: encryptedPassword }, { where: { username: loggedInUserName } });
+
+        await AccessToken.destroy({ where: { userId: user.id } })
+
+        return { successful: true, message: 'User\'s password updated successfully. You have to login again.' }
+
+    }
+
+    const loadUserInformation = async (loggedInUserName) => {
+        const user = await User.findOne({ where: { username: loggedInUserName } });
+        if (user == null) {
+            return { successful: false, message: 'user not found' }
+        }
+        const { email, first_name, last_name, username, display_picture, gender } = user;
+        return { email, first_name, last_name, username, display_picture, gender, successful: true }
+    }
+
+    const filterUser = async (filterValue) => {
+        return await User.findAll({
+            where: {
+                [Op.or]: [
+                    { username: { [Op.like]: `%${filterValue}%` } },
+                    { first_name: { [Op.like]: `%${filterValue}%` } },
+                    { last_name: { [Op.like]: `%${filterValue}%` } }
+                ]
+            }, limit: 10,
+            attributes: ['username', 'first_name', 'last_name', 'display_picture']
+        });
+    }
+
+    return {
+        signUp, loadUsers, uploadImage, saveUserDisplayPicture, loadDisplayPictureForUser,
+        logout, updateUserInfo, updateUserPassword, loadUserInformation, filterUser
+    }
 
 }
 
