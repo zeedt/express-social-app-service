@@ -133,6 +133,14 @@ const UserController = (app) => {
       const response = await UserService.filterUser(req.params.filter_value);
       return  res.json(response);
     });
+
+    app.get("/find-user/:username", async (req, res) => {
+      const response = await UserService.findUserByUsername(req.params.username);
+      if (response != null && response.username === req.params.username) {
+      return  res.json(response);
+      }
+      return  res.status(500).json({message:"User not found"});
+    });
 }
 
 module.exports = UserController

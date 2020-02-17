@@ -147,9 +147,18 @@ const UserService = () => {
         });
     }
 
+    const findUserByUsername = async (username) => {
+        return await User.findOne({
+            where: {
+                 username: username
+            },
+            attributes: ['username', 'first_name', 'last_name', 'gender', 'display_picture']
+        });
+    }
+
     return {
         signUp, loadUsers, uploadImage, saveUserDisplayPicture, loadDisplayPictureForUser,
-        logout, updateUserInfo, updateUserPassword, loadUserInformation, filterUser
+        logout, updateUserInfo, updateUserPassword, loadUserInformation, filterUser, findUserByUsername
     }
 
 }
