@@ -128,13 +128,13 @@ const UserController = (app) => {
 
     });
 
-    app.get("/filter-users/:filter_value", async (req, res) => {
+    app.get("/filter-users/:filter_value", passport.authenticate('bearer', { session: false }), async (req, res) => {
         console.log("Filter value os " + req.params.filter_value)
       const response = await UserService.filterUser(req.params.filter_value);
       return  res.json(response);
     });
 
-    app.get("/find-user/:username", async (req, res) => {
+    app.get("/find-user/:username", passport.authenticate('bearer', { session: false }), async (req, res) => {
       const response = await UserService.findUserByUsername(req.params.username);
       if (response != null && response.username === req.params.username) {
       return  res.json(response);

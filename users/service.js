@@ -67,7 +67,7 @@ const UserService = () => {
 
         user.display_picture = filePath;
         await User.update({ display_picture: filePath }, { where: { id: id } });
-        return { successful: true }
+        return { successful: true, display_picture : filePath }
     }
 
     const uploadImage = multer({ storage: storage }).single('file');
