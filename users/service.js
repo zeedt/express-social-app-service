@@ -152,7 +152,7 @@ const UserService = () => {
             where: {
                  username: username
             },
-            attributes: ['username', 'first_name', 'last_name', 'gender', 'display_picture']
+            attributes: ['username', 'first_name', 'last_name', 'gender', 'display_picture', 'email']
         });
     }
 
