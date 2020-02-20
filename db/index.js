@@ -5,7 +5,8 @@ const connection = new Sequelize('social', 'postgres', 'Andela2.', {
     dialect : 'postgres',
     define: {
         freezeTableName: true
-    }
+    },
+    logging : false
 });
 
 module.exports = {connection, Sequelize}

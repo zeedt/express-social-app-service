@@ -15,8 +15,8 @@ const PostController = (app) => {
             }
             try {
                 req.body.userId = req.user.id
-                await PostService.addPost(req.body);
-                return res.json({ message: "Post added successfully" });
+                const result = await PostService.addPost(req.body);
+                return res.json(result);
             } catch (e) {
                 return res.json({ message: e.message }).status(INTERNAL_SERVER_ERROR_STATUS_CODE);
             }
