@@ -4,7 +4,9 @@ const oauth2 = require('../authentication/oauth2');
 const passport = require('../middleware/index').passport;
 const INTERNAL_SERVER_ERROR_STATUS_CODE = 500;
 const multer = require('multer');
-
+const fs = require('fs');
+const S3StorageService = require('../s3/s3-storage');
+const S3_BUCKET_URL = 'https://social-app-bucket1.s3.amazonaws.com/social-app-images/';
 const UserController = (app) => {
 
     app.post('/oauth/token', oauth2.token);
@@ -49,14 +51,20 @@ const UserController = (app) => {
 
     app.post("/upload-image", passport.authenticate('bearer', { session: false }), async (req, res) => {
         var filePath;
+
+        console.dir("File ");
+        console.log(req.file);
         await UserService.uploadImage(req, res, async function (err) {
             if (err instanceof multer.MulterError) {
                 return res.status(500).json(err)
             } else if (err) {
                 return res.status(500).json(err)
             }
-            filePath = 'resources/images/' + req.file.filename;
-            const response = await UserService.saveUserDisplayPicture(req.user.id, filePath);
+            console.log(`${req.file.path}/${req.file.filename}`);
+            const fileContent = fs.readFileSync(`${req.file.path}`);
+            S3StorageService.uploadImageToS3(fileContent, req.file.filename);
+            const response = await UserService.saveUserDisplayPicture(req.user.id, `${S3_BUCKET_URL}${req.file.filename}`);
+            fs.unlinkSync(`${req.file.path}`);
             if (!response.successful) {
                 return res.status(500).json(response)
             }
@@ -78,7 +86,7 @@ const UserController = (app) => {
     app.get('/logout', passport.authenticate('bearer', { session: false }), async (req, res) => {
         console.log("User id " + req.user.id);
         const response = await UserService.logout(req.user.id);
-         res.json({successful : response});
+        res.json({ successful: response });
     });
 
     app.post("/update-my-info", [
@@ -100,7 +108,7 @@ const UserController = (app) => {
             res.status(500).json(response);
         } catch (e) {
             console.log("Error occurred due to ", e)
-             res.status(500).json({successful : false, message : 'Error occurred due to ' + e.message});
+            res.status(500).json({ successful: false, message: 'Error occurred due to ' + e.message });
         }
 
     });
@@ -123,23 +131,23 @@ const UserController = (app) => {
             res.status(500).json(response);
         } catch (e) {
             console.log("Error occurred due to ", e)
-             res.status(500).json({successful : false, message : 'Error occurred due to ' + e.message});
+            res.status(500).json({ successful: false, message: 'Error occurred due to ' + e.message });
         }
 
     });
 
     app.get("/filter-users/:filter_value", passport.authenticate('bearer', { session: false }), async (req, res) => {
         console.log("Filter value os " + req.params.filter_value)
-      const response = await UserService.filterUser(req.params.filter_value);
-      return  res.json(response);
+        const response = await UserService.filterUser(req.params.filter_value);
+        return res.json(response);
     });
 
     app.get("/find-user/:username", passport.authenticate('bearer', { session: false }), async (req, res) => {
-      const response = await UserService.findUserByUsername(req.params.username);
-      if (response != null && response.username === req.params.username) {
-      return  res.json(response);
-      }
-      return  res.status(500).json({message:"User not found"});
+        const response = await UserService.findUserByUsername(req.params.username);
+        if (response != null && response.username === req.params.username) {
+            return res.json(response);
+        }
+        return res.status(500).json({ message: "User not found" });
     });
 }
 
