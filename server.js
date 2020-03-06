@@ -6,9 +6,6 @@ require('./users/controller')(app);
 require('./post/controller')(app);
 require('./comment/controller')(app);
 
-console.dir(process.env.AWS_ACCESS_KEY)
-console.dir(process.env.AWS_SECRET_ACCESS_KEY)
-
 var server = require('./socket/connection').initiateSocketServer(app);
 
 var io = require('./socket/IOSetUp').getIo(server);
