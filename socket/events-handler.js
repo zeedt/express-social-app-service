@@ -23,6 +23,8 @@ const IOEvents = (io) => {
         io.emit('connection-received', {})
 
         socket.on('join', data => {
+            console.log("REceived user ");
+            console.dir(data)
             if (socketIds.includes(socket.id)) {
                 // console.log("Socket already exists");
                 return;

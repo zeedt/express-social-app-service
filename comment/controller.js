@@ -37,6 +37,18 @@ const CommentController = (app) => {
         }
     });
 
+    app.get("/comment/:postId/comments-with-lesser-id", passport.authenticate('bearer', { session: false }),
+    check('postId').isNumeric().withMessage('Post id cannot be blank')
+     , async (req, res) => {
+        try {
+              const comments = await CommentService.loadCommentsOfLesserId(req.query['commentId'], req.query['pageSize'], req.params.postId);
+              return  res.json(comments);
+        } catch (e) {
+            Logger.error("Error occurred while loading posts due to ", e);
+              return  res.json({message:'Error occurred while fetching posts'}).status(INTERNAL_SERVER_ERROR_STATUS_CODE);
+        }
+      });
+
 }
 
 

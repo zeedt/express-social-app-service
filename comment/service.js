@@ -2,6 +2,7 @@ const Comment = require('../db/models/comment');
 const User = require('../db/models/users');
 const Post = require('../db/models/post');
 const Logger = require('../logger')
+const Op = require('../db/index').Sequelize.Op;
 
 const CommentService = () => {
 
@@ -28,6 +29,11 @@ const CommentService = () => {
             const offset = pageNo * pageSize
             return await Comment.findAll({
                 limit : pageSize,
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['username', 'first_name', 'last_name', 'display_picture']
+                }],
                 offset : offset,
                 order : [
                     ['id', 'DESC']
@@ -41,7 +47,27 @@ const CommentService = () => {
         }
     }
 
-    return {addComment, loadCommentsByPostId}
+    const loadCommentsOfLesserId = async (commentId = 0, pageSize = 10, postId) => {
+        pageSize = (isNaN(pageSize)) ? 10 : pageSize;
+        return await Comment.findAll(
+            {
+                where : {
+                    id : {[Op.lt] : (commentId)},
+                    postId : postId
+                },
+                limit : pageSize,
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['username', 'first_name', 'last_name', 'display_picture']
+                }],
+                order : [
+                    ['id' , "DESC"]
+                ]
+            });
+    }
+
+    return {addComment, loadCommentsByPostId, loadCommentsOfLesserId}
 }
 
 module.exports = CommentService();
