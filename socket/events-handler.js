@@ -1,6 +1,6 @@
-var connectedUsers = [];
+global.connectedUsers = [];
 var socketIds = [];
-
+const ChatService = require('../chat/service');
 // setInterval(() => {
 //     console.log(connectedUsers.length)
 // }, 1000)
@@ -19,8 +19,32 @@ const getUserSocketsToPushTo = (username) => {
 const IOEvents = (io) => {
 
     io.on('connection', socket => {
+        console.log("Connected");
 
         io.emit('connection-received', {})
+
+        socket.on('private-message-redirect', data => {
+            console.log(data);
+
+
+            // io.to(socket.id).emit('private-message-received', data);
+
+            var socketsToPushMessageTo = getUserSocketsToPushTo(data.fromUsername);
+            console.log('Number of sockets to send to ' + getUserSocketsToPushTo(data.fromUsername));
+            socketsToPushMessageTo.map(socketId => {
+                socket.broadcast.to(socketId).emit('private-message-received', data);
+                console.log("Emitted to " + socketId);
+            });
+            socketsToPushMessageTo = getUserSocketsToPushTo(data.toUsername);
+            console.log('Number of sockets to send to ' + getUserSocketsToPushTo(data.toUsername));
+            //call method to save message asyncronously
+            socketsToPushMessageTo.map(socketId => {
+                socket.broadcast.to(socketId).emit('private-message-received', data);
+                console.log("Emitted to " + socketId);
+            });
+
+
+        });
 
         socket.on('join', data => {
             console.log("REceived user ");
@@ -46,27 +70,25 @@ const IOEvents = (io) => {
         });
 
         socket.on('private-message-sent', data => {
-            console.dir(data);
-            //dispatch to the sender as well, so all connected sockets for that user can have their chat history updated
+            // console.log("Emitted");
+            // console.dir(data);
+            // //dispatch to the sender as well, so all connected sockets for that user can have their chat history updated
 
-            io.to(socket.id).emit('private-message-received', data);
+            // io.to(socket.id).emit('private-message-received', data);
 
-            var socketsToPushMessageTo = getUserSocketsToPushTo(data.fromUsername);
-            console.log('Number of sockets to send to ' + getUserSocketsToPushTo(data.fromUsername));
-            socketsToPushMessageTo.map(socketId => {
-                socket.broadcast.to(socketId).emit('private-message-received', data);
-                console.log("Emitted to " + socketId);
-            })
-
-
-            socketsToPushMessageTo = getUserSocketsToPushTo(data.toUsername);
-            console.log('Number of sockets to send to ' + getUserSocketsToPushTo(data.toUsername));
-            socketsToPushMessageTo.map(socketId => {
-                socket.broadcast.to(socketId).emit('private-message-received', data);
-                console.log("Emitted to " + socketId);
-            })
-            // io.emit('private-message-received', data);
-            // console.log("Emmitted");
+            // var socketsToPushMessageTo = getUserSocketsToPushTo(data.fromUsername);
+            // console.log('Number of sockets to send to ' + getUserSocketsToPushTo(data.fromUsername));
+            // socketsToPushMessageTo.map(socketId => {
+            //     socket.broadcast.to(socketId).emit('private-message-received', data);
+            //     console.log("Emitted to " + socketId);
+            // });
+            // socketsToPushMessageTo = getUserSocketsToPushTo(data.toUsername);
+            // console.log('Number of sockets to send to ' + getUserSocketsToPushTo(data.toUsername));
+            // //call method to save message asyncronously
+            // socketsToPushMessageTo.map(socketId => {
+            //     socket.broadcast.to(socketId).emit('private-message-received', data);
+            //     console.log("Emitted to " + socketId);
+            // });
         });
 
         socket.on('disconnect', () => {

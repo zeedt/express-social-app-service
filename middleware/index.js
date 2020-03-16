@@ -12,6 +12,7 @@ app.use('/resources/images',express.static('public/upload'));
 const {connection, Sequelize} = require('../db');
 const Post = require('../db/models/post')
 const Comment = require('../db/models/comment');
+const Chat = require('../db/models/chat');
 const Logger = require('../logger');
 
 connection.sync().then(()=>{

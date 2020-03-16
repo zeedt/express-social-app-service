@@ -5,6 +5,7 @@ var socketIds = [];
 require('./users/controller')(app);
 require('./post/controller')(app);
 require('./comment/controller')(app);
+require('./chat/controller')(app);
 
 var server = require('./socket/connection').initiateSocketServer(app);
 
