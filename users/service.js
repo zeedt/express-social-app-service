@@ -5,6 +5,8 @@ const Logger = require('../logger');
 const fs = require('fs');
 const { AccessToken } = require('../authentication/db/models')
 const Op = require('../db/index').Sequelize.Op;
+const fn = require('../db/index').Sequelize.fn;
+const col = require('../db/index').Sequelize.col;
 
 const multer = require('multer')
 
@@ -135,15 +137,19 @@ const UserService = () => {
     }
 
     const filterUser = async (filterValue) => {
+        console.log(filterValue.toLowerCase())
         return await User.findAll({
             where: {
                 [Op.or]: [
-                    { username: { [Op.like]: `%${filterValue}%` } },
-                    { first_name: { [Op.like]: `%${filterValue}%` } },
-                    { last_name: { [Op.like]: `%${filterValue}%` } }
+                    // { username: { [Op.like]: `%${filterValue}%` } },
+                    {username : sequelize.where(sequelize.fn('LOWER', sequelize.col('username')), 'LIKE', '%' + filterValue.toLowerCase() + '%')},
+                    {first_name : sequelize.where(sequelize.fn('LOWER', sequelize.col('first_name')), 'LIKE', '%' + filterValue.toLowerCase() + '%')},
+                    {last_name : sequelize.where(sequelize.fn('LOWER', sequelize.col('last_name')), 'LIKE', '%' + filterValue.toLowerCase() + '%')},
+                    // { first_name: { [Op.like]: `%${filterValue}%` } },
+                    // { last_name: { [Op.like]: `%${filterValue}%` } }
                 ]
             }, limit: 10,
-            attributes: ['username', 'first_name', 'last_name', 'display_picture']
+            attributes: ['username', 'first_name', 'last_name', 'display_picture', 'email', 'gender']
         });
     }
 
