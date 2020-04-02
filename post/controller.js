@@ -43,9 +43,10 @@ const PostController = (app) => {
         }
         console.log("BODY " + JSON.stringify(req.fields));
         try {
-            const files = req.files.files.length > 0 ? req.files.files : [req.files.files];
+            const files = req.files.files != undefined && req.files.files.length > 0 ? req.files.files : [req.files.files];
             let filePaths = [];
-            for (var i = 0; i < files.length; i++) {
+            if (req.files.files != undefined) {
+                for (var i = 0; i < files.length; i++) {
                 if (files[i].size > 0) {
                     console.log("IN");
                     try {
@@ -66,6 +67,7 @@ const PostController = (app) => {
                     }
                 }
             }
+        }
             console.log(filePaths.length);
             const result = await PostService.addPost({
                 content: req.fields.content,
