@@ -8,6 +8,9 @@ const Post = connection.define('posts', {
         validate : {
             len : [10]
         }
+    },
+    attachments : {
+        type : Sequelize.TEXT
     }
 })
 

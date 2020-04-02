@@ -1,8 +1,20 @@
 const Post = require('../db/models/post');
 const User = require('../db/models/users');
 const Op = require('../db/index').Sequelize.Op;
+const multer = require('multer')
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/upload')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname)
+    }
+});
 
 const PostService = () => {
+
+    const uploadMultipleFiles = multer({ storage: storage }).array('files');
 
 
     const addPost = async (postData) => {
@@ -51,7 +63,7 @@ const PostService = () => {
             });
     }
 
-    return { addPost, loadPosts, loadPostsOfLesserId }
+    return { addPost, loadPosts, loadPostsOfLesserId, uploadMultipleFiles }
 }
 
 

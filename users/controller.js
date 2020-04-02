@@ -62,7 +62,7 @@ const UserController = (app) => {
             }
             console.log(`${req.file.path}/${req.file.filename}`);
             const fileContent = fs.readFileSync(`${req.file.path}`);
-            S3StorageService.uploadImageToS3(fileContent, req.file.filename);
+            await S3StorageService.uploadImageToS3(fileContent, req.file.filename);
             const response = await UserService.saveUserDisplayPicture(req.user.id, `${S3_BUCKET_URL}${req.file.filename}`);
             fs.unlinkSync(`${req.file.path}`);
             if (!response.successful) {
