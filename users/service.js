@@ -47,12 +47,13 @@ const UserService = () => {
         }
     }
 
-    const loadUsers = async () => {
+    const loadUsers = async (currentUser) => {
 
         try {
-            const userList = await User.findAll({
-                attributes: ['username', 'first_name', 'last_name']
+            var userList = await User.findAll({
+                attributes: ['username', 'first_name', 'last_name','display_picture', 'email']
             });
+            userList = userList.filter(u=>u.username!=currentUser);
             return { successful: true, users: userList }
         } catch (e) {
             Logger.error("Error occurred while loading users due to ", e);
@@ -162,8 +163,14 @@ const UserService = () => {
         });
     }
 
+    const findAllUsers = async (username) => {
+        return await User.findAll({
+            attributes: ['username', 'first_name', 'last_name', 'gender', 'display_picture', 'email']
+        });
+    }
+
     return {
-        signUp, loadUsers, uploadImage, saveUserDisplayPicture, loadDisplayPictureForUser,
+        signUp, loadUsers, uploadImage, saveUserDisplayPicture, loadDisplayPictureForUser,findAllUsers,
         logout, updateUserInfo, updateUserPassword, loadUserInformation, filterUser, findUserByUsername
     }
 

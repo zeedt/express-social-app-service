@@ -32,7 +32,7 @@ const UserController = (app) => {
     });
 
     app.get("/load-users", passport.authenticate('bearer', { session: false }), async (req, res) => {
-        const result = await UserService.loadUsers();
+        const result = await UserService.loadUsers(req.user.username);
         if (result.successful) {
             res.json(result);
         } else {
@@ -148,6 +148,14 @@ const UserController = (app) => {
             return res.json(response);
         }
         return res.status(500).json({ message: "User not found" });
+    });
+    
+    app.get("/user-list", passport.authenticate('bearer', { session: false }), async (req, res) => {
+        const response = await UserService.findAllUsers(req.params.username);
+        if (response != null && response.username === req.params.username) {
+            return res.json(response);
+        }
+        return res.status(500).json({ message: "No user found" });
     });
 }
 
